@@ -35,6 +35,7 @@ public class Facede {
 	}
 	
 	public void cadastrarAtividadeBase(Atividade newAtividade) {
+		newAtividade.setAtividadeBase(true);
 		Atividade.salvar(newAtividade);
 	}
 	

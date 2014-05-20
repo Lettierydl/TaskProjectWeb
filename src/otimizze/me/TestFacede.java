@@ -1,10 +1,11 @@
 package otimizze.me;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+
+import java.util.ArrayList;
 
 import org.junit.After;
-import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,7 +27,7 @@ public class TestFacede {
 	
 	@After
 	public void finalizarTestes(){
-		Persistencia.limparBancoDeDados();
+		//Persistencia.limparBancoDeDados();
 	}
 	
 	private Maquina criarMaquina(String descricao) {
@@ -44,7 +45,7 @@ public class TestFacede {
 	private Atividade criarAtividadeBase() {
 		Atividade a = new Atividade();
 		a.setDescricao("Polir a materia prima");
-		a.setMaquina(criarMaquina("Maquina x"));
+		a.addMaquinas(criarMaquina("Maquina x"));
 		a.setTempo(3);
 		a.setSequencia(1);
 		a.setQuantidadeDeProducao(300);
@@ -54,8 +55,8 @@ public class TestFacede {
 	
 	private Atividade criarAtividade() {
 		Atividade a = new Atividade();
-		a.setDescricao("Embalar Produto");
-		a.setMaquina(criarMaquina("Maquina x"));
+		a.setDescricao("Embalar Produto "+Math.random());
+		a.addMaquinas(criarMaquina("Maquina x "+Math.random()));
 		a.setTempo(3);
 		a.setSequencia(2);
 		a.setQuantidadeDeProducao(300);
@@ -97,6 +98,26 @@ public class TestFacede {
 		Atividade a = criarAtividade();
 		f.cadastrarAtividade(a, criarProduto("Produto zz"));
 		assertEquals("Nao esta salvando a atividade", a, f.getAtividades().get(0));	
+	}
+	
+	@Test
+	public void testCadastrarAtividadeComMaquinaJaCriada() {
+		Maquina m = criarMaquina("Maquina " + Math.random());
+		f.cadastrarMaquina(m);
+		Atividade a = criarAtividade();
+		a.addMaquinas(m);
+		f.cadastrarAtividadeBase(a);
+		assertEquals("Nao esta salvando a atividade", a, f.getAtividades().get(0));	
+	}
+	
+	@Test
+	public void testCadastrarAtividadePrecessora() throws Exception {
+		Atividade a = criarAtividade();
+		Atividade a2 = criarAtividade();
+		f.cadastrarAtividadeBase(a2);
+		a.addAtividadePrecessora(a2);
+		f.cadastrarAtividade(a, criarProduto("Produto zz"));
+		assertEquals("Nao esta salvando a atividade precessora", a.getAtividadesPrecessoras().get(0), a2);
 	}
 	
 	@Test

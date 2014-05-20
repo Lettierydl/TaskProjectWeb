@@ -7,6 +7,7 @@ import javax.faces.bean.ViewScoped;
 
 import otimizze.me.Facede;
 import otimizze.me.model.Maquina;
+import otimizze.me.util.JSFUiUtil;
 
 @ManagedBean(name = "maquinaBean")
 @ViewScoped

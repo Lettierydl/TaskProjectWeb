@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Task</title>
+	<link href="dist/css/bootstrap.min.css" rel="stylesheet" media="screen" />
+	<link href="dist/css/signin.css" rel="stylesheet" />
+
+</h:head>
+<h:body>
+	<div class="container">
+		<h:form class="form-signin">
+		<h:messages id="mensage" infoClass="alert alert-success" errorClass="alert alert-danger" fatalClass="alert alert-danger" warnClass="alert alert-warning"/>
+		
+			<h2 class="form-signin-heading">Cadastro de Maquinas</h2>
+			
+			<h:inputText id="descricaoText" type="text" class="form-control"
+				required="true" maxlength="500" value="#{maquinaBean.newMaquina.descricao}"
+				requiredMessage="Deve ser digitado a descricao da maquina"/>
+			<p:watermark value="Descricao" for="descricaoText"/>	
+			
+			<br/>
+			<h:commandButton actionListener="#{maquinaBean.cadastrarMaquina}" value="Cadastrar Maquina"
+				class="btn btn-lg btn-primary btn-block" />
+			
+			<br/>
+			
+			<h:dataTable id="tabelaMaquinas"
+				styleClass="table table-hover table-bordered tabela"
+				value="#{maquinaBean.maquinas}" var="maq">
+				<f:facet name="header">
+					<h4 align="center">Maquinas</h4>
+				</f:facet>
+				<h:column>
+					<f:facet name="header">Identificador</f:facet> 
+					#{maq.id}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Descrição</f:facet>
+					#{maq.descricao}
+				</h:column>
+				
+			</h:dataTable>
+			
+		</h:form>
+	</div>
+
+</h:body>
+</html>

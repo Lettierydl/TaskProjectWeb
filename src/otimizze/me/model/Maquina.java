@@ -1,6 +1,8 @@
 package otimizze.me.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -8,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 import otimizze.me.util.Persistencia;
@@ -21,10 +24,12 @@ public class Maquina implements Serializable {
 	@Basic(optional = false)
 	private int id;
 	
+	@ManyToMany(mappedBy = "maquinas")
+	private List<Atividade> possiveisAtividades;
+	
 	@Column(nullable = false, unique = true)
 	private String descricao;
 
-	
 	
 	public int getId() {
 		return id;
@@ -38,7 +43,17 @@ public class Maquina implements Serializable {
 		this.descricao = descricao;
 	}
 	
-	
+	public List<Atividade> getPossiveisAtividades() {
+		return possiveisAtividades;
+	}
+
+	public void addPossivelAtividade(Atividade possivelAtividade) {
+		if(this.possiveisAtividades == null){
+			this.possiveisAtividades = new ArrayList<Atividade>();
+		}
+		this.possiveisAtividades.add(possivelAtividade);
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -102,6 +117,11 @@ public class Maquina implements Serializable {
 			return;
 		}
 		Persistencia.finalizarTrascao();
+	}
+
+	@Override
+	public String toString() {
+		return descricao + " Identificador: "+id;
 	}
 	
 	
