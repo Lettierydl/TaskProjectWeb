@@ -138,7 +138,7 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 		if (this.atividadesPrecessoras == null) {
 			this.atividadesPrecessoras = new LinkedList<Atividade>();
 		}
-		if (precessora.equals(this)) {
+		if (precessora.equals(this)) {//verificar tambem de não existe tipo um deadlock de atividades
 			throw new Exception("Loop de atividade");
 		}
 		this.atividadesPrecessoras.add(precessora);

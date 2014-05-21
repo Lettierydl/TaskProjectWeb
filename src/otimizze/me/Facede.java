@@ -29,6 +29,10 @@ public class Facede {
 		return Finder.getAtividadesBase();
 	}
 	
+	public Atividade getAtividade(int id) {
+		return Finder.getAtividade(id);
+	}
+	
 	public void cadastrarAtividade(Atividade newAtividade, Produto newProduto) {
 		newAtividade.setProdutoDaAtividade(newProduto);
 		Atividade.salvar(newAtividade);

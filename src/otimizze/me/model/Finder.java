@@ -47,6 +47,16 @@ public final class Finder {
 		List<Atividade> atividades = q.getResultList();
 		return atividades;
 	}
+	
+	public static Atividade getAtividade(int id) {
+		Persistencia.restartConnection();
+		Query q = Persistencia.em.createQuery(
+						"SELECT a FROM Atividade AS a WHERE a.id = :aid",
+						Atividade.class);
+		q.setParameter("aid", id);
+		Atividade atividade = (Atividade) q.getSingleResult();
+		return atividade;
+	}
 
 	public static List<Produto> getProdutos() {
 		Persistencia.restartConnection();
@@ -66,6 +76,8 @@ public final class Finder {
 		Produto produto = (Produto) q.getSingleResult();
 		return produto;
 	}
+
+	
 	
 	
 	

@@ -8,6 +8,7 @@ import javax.faces.bean.ViewScoped;
 import otimizze.me.Facede;
 import otimizze.me.model.Atividade;
 import otimizze.me.model.Maquina;
+import otimizze.me.util.JSFUiUtil;
 import otimizze.me.util.Persistencia;
 
 @ManagedBean(name = "atividadeBean")
@@ -18,6 +19,7 @@ public class AtividadeBean {
 	private Atividade newAtividade;
 	private Facede f;
 	private List<String> listaMaquinasEscolhidas;
+	private List<String> atividadesEscolhidas;
 	
 	public AtividadeBean(){
 		newAtividade = new Atividade();
@@ -27,6 +29,13 @@ public class AtividadeBean {
 	public void cadastrarAtividade(){
 		for(String descricao: listaMaquinasEscolhidas){
 			newAtividade.addMaquinas(f.getMaquina(descricao));
+		}
+		for(String id : atividadesEscolhidas){
+			try {
+				newAtividade.addAtividadePrecessora(f.getAtividade(Integer.valueOf(id)));
+			} catch (Exception e) {
+				JSFUiUtil.error(e.getMessage());return;
+			}
 		}
 		f.cadastrarAtividadeBase(newAtividade);
 		newAtividade = new Atividade();
@@ -54,6 +63,14 @@ public class AtividadeBean {
 
 	public void setListaMaquinasEscolhidas(List<String> listaMaquinasEscolhidas) {
 		this.listaMaquinasEscolhidas = listaMaquinasEscolhidas;
+	}
+
+	public List<String> getAtividadesEscolhidas() {
+		return atividadesEscolhidas;
+	}
+
+	public void setAtividadesEscolhidas(List<String> atividadesEscolhidas) {
+		this.atividadesEscolhidas = atividadesEscolhidas;
 	}
 	
 	
