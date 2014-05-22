@@ -19,9 +19,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import otimizze.me.util.Persistencia;
 
 @Table(name = "atividade")
@@ -33,7 +30,7 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 	@Basic(optional = false)
 	private int id;
 
-	@Column(nullable = false)
+	@Column(nullable = false, unique = true)
 	private String descricao;
 
 	@Column(nullable = false)
@@ -62,7 +59,9 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 	private Produto produtoDaAtividade;
 
 	@OneToMany(cascade = CascadeType.DETACH)
-	//@Fetch(FetchMode.SUBSELECT)
+	@JoinTable(name="atividades_precessoras",
+	joinColumns = @JoinColumn(name = "atividade_id") ,
+	inverseJoinColumns = @JoinColumn(name = "atividade_precessora_id"))
 	private List<Atividade> atividadesPrecessoras;// atividades que precedem
 													// esta atividade
 
@@ -141,7 +140,7 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 		if (precessora.equals(this)) {//verificar tambem de não existe tipo um deadlock de atividades
 			throw new Exception("Loop de atividade");
 		}
-		this.atividadesPrecessoras.add(precessora);
+		this.atividadesPrecessoras.add(atividadesPrecessoras.size(), precessora);
 	}
 
 	public Produto getProdutoDaAtividade() {

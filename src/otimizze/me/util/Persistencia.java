@@ -52,6 +52,7 @@ public class Persistencia {
 		for(Maquina m : Finder.getMaquinas()){
 			Maquina.remover(m);
 		}
+		
 		restartConnection();
 	}
 

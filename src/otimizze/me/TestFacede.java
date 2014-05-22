@@ -2,8 +2,6 @@ package otimizze.me;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -148,6 +146,20 @@ public class TestFacede {
 		Produto p = criarProduto("Produto xx");
 		f.cadastrarProduto(p);
 		assertEquals("Nao esta salvando o produto", p, f.getProdutos().get(0));	
+	}
+	
+	@Test
+	public void testCadastrarProdutoComAtividade() {
+		Produto p = criarProduto("Produto xx");
+		Atividade a = criarAtividade();
+		f.cadastrarMaquina(a.getMaquinas().get(0));
+		Atividade a2 = criarAtividade();
+		f.cadastrarMaquina(a2.getMaquinas().get(0));
+		p.addAtividadeASequenciaDeProducao(a);
+		p.addAtividadeASequenciaDeProducao(a2);
+		f.cadastrarProduto(p);
+		assertEquals("Nao esta salvando o produto", p, f.getProdutos().get(0));
+		Assert.assertArrayEquals("Nao esta salvando o produto com as atividades", p.getSequenciaDeProducao().toArray(), f.getProdutos().get(0).getSequenciaDeProducao().toArray());
 	}
 
 	

@@ -14,9 +14,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import otimizze.me.util.Persistencia;
 
 @Table(name = "produto")
@@ -49,16 +46,24 @@ public class Produto implements Serializable {
 	}
 	
 	public List<Atividade> getSequenciaDeProducao() {
+		if(this.sequenciaDeProducao == null){
+			this.sequenciaDeProducao = new LinkedList<Atividade>();
+		}
 		return sequenciaDeProducao;
 	}
+	
 	
 	public void addAtividadeASequenciaDeProducao(Atividade atividade) {
 		if(this.sequenciaDeProducao == null){
 			this.sequenciaDeProducao = new LinkedList<Atividade>();
 		}
 		this.sequenciaDeProducao.add(atividade);
+		atividade.setProdutoDaAtividade(this);
 	}
 	
+	public void removerAtividadeASequenciaDeProducao(Atividade atividade) {
+		this.sequenciaDeProducao.remove(atividade);
+	}
 	
 	public static void salvar(Produto p)  {
 		Persistencia.iniciarTrascao();

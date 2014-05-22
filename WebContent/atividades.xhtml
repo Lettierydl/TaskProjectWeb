@@ -12,64 +12,138 @@
 </h:head>
 <h:body>
 	<div class="container">
-		<h:form class="form-signin">
+
+<!-- INICIO DA ETAPA 1  DIVIDIR ETAPAS EM PAGINAS-->
+
+		<h:form class="form-signin" id="formProduto">
+
+			<h:inputText id="descricaoProdutoText" type="text"
+				class="form-control" maxlength="500"
+				value="#{produtoBean.newProduto.descricao}" />
+			<p:watermark value="Descricao do Produto" for="descricaoProdutoText" />
+			<h:commandButton actionListener="#{produtoBean.cadastrarProduto}"
+				value="Cadastrar Produto" class="btn btn-lg btn-primary btn-block" />
+
+			<h:dataTable id="tabelaDeProdutos"
+				styleClass="table table-hover table-bordered tabela"
+				value="#{produtoBean.produtos}" var="pro">
+				<f:facet name="header">
+					<h4 align="center">Produtos</h4>
+				</f:facet>
+				<h:column>
+					<f:facet name="header">Identificador</f:facet> 
+					#{pro.id}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Descrição</f:facet> 
+					#{pro.descricao}
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Sequencia de Produção</f:facet>
+					<h:dataTable id="tabelaSequenciaDeProducao"
+						value="#{pro.sequenciaDeProducao}" var="at">
+								<h:column>
+									<f:facet name="header">Identificador</f:facet> 
+										#{at.id}
+									</h:column>
+								<h:column>
+									<f:facet name="header">Descrição</f:facet>
+									#{at.descricao}
+								</h:column>
+								
+								<h:column>
+									<f:facet name="header">Tempo</f:facet>
+									#{at.tempo}
+								</h:column>
+								
+								<h:column>
+									<f:facet name="header">Quantidade Produzida</f:facet>
+									#{at.quantidadeDeProducao}
+								</h:column>
+
+								<h:column>
+									<f:facet name="header">Possiveis Maquinas</f:facet>
+									<h:dataTable id="tabelaPossiveisMaquinasAt"
+										value="#{at.maquinas}" var="maq">
+										<h:column>
+											<f:facet name="header">Id.</f:facet>
+											#{maq.id}
+										</h:column>
+										<h:column>
+											<f:facet name="header">Descrição</f:facet>
+											#{maq.descricao}
+										</h:column>
+									</h:dataTable>
+								</h:column>
+							</h:dataTable>
+						</h:column>
+			</h:dataTable>
+		</h:form>
+
+<!-- FIM DA ETAPA 1 INICIO DA ETAPA 2 -->
+
+
+		<h:form class="form-signin" id="formAtividadesDoProduto">
 			<h:messages id="mensage" infoClass="alert alert-success"
 				errorClass="alert alert-danger" fatalClass="alert alert-danger"
 				warnClass="alert alert-warning" />
 
-			<h2 class="form-signin-heading">Cadastro de Atividades Base</h2>
+			<h2 class="form-signin-heading">Cadastro de Atividades do
+				Produto</h2>
 
 			<h:inputText id="descricaoText" type="text" class="form-control"
 				required="true" maxlength="500"
-				value="#{atividadeBean.newAtividade.descricao}"
+				value="#{produtoBean.newAtividade.descricao}"
 				requiredMessage="Deve ser digitado a descricao da atividade" />
 			<p:watermark value="Descricao" for="descricaoText" />
 
 
 			<h:inputText id="tempoText" type="text" class="form-control"
 				required="true" maxlength="500"
-				value="#{atividadeBean.newAtividade.tempo}"
+				value="#{produtoBean.newAtividade.tempo}"
 				requiredMessage="Deve ser digitado o tempo desta atividade" />
 			<p:watermark value="Tempo" for="tempoText" />
 
 
 			<h:inputText id="quantidadeText" type="text" class="form-control"
 				required="true" maxlength="500"
-				value="#{atividadeBean.newAtividade.quantidadeDeProducao}"
+				value="#{produtoBean.newAtividade.quantidadeDeProducao}"
 				requiredMessage="Deve ser digitado a quantidade de produto que esta atividade produzira" />
 			<p:watermark value="Quantidade Produção" for="quantidadeText" />
 
 			<h:selectManyListbox id="maquinaSelect" class="form-control"
-				required="true" value="#{atividadeBean.listaMaquinasEscolhidas}"
+				required="true" value="#{produtoBean.listaMaquinasEscolhidas}"
 				requiredMessage="Deve ser escolhido pelo menos uma maquina">
 
-				<f:selectItems value="#{atividadeBean.maquinas}" var="maq"
+				<f:selectItems value="#{produtoBean.maquinas}" var="maq"
 					itemValue="#{maq.descricao}" itemLabel="#{maq.descricao}" />
 
 			</h:selectManyListbox>
 
 			<br />
-			
-			<h:outputLabel value="Atividades Predecessoras"/>
-			<h:selectManyListbox id="atividasSelect" class="form-control"
-				value="#{atividadeBean.atividadesEscolhidas}" >
 
-				<f:selectItems value="#{atividadeBean.atividadesBase}" var="at"
-					itemValue="#{at.id}" itemLabel="#{at.descricao}" />
+			<h:outputLabel value="Atividades Predecessoras" />
+			<h:selectManyListbox id="atividasSelect" class="form-control"
+				value="#{produtoBean.atividadesEscolhidas}">
+
+				<f:selectItems value="#{produtoBean.possiveisAtividadesPrecessoras}"
+					var="at" itemValue="#{at.id}" itemLabel="#{at.descricao}" />
 
 			</h:selectManyListbox>
-			
-			<br/>
-			<h:commandButton actionListener="#{atividadeBean.cadastrarAtividade}"
+
+			<br />
+			<h:commandButton
+				actionListener="#{produtoBean.adicionarAtividadeNoProduto}"
 				value="Cadastrar Atividade" class="btn btn-lg btn-primary btn-block" />
 
 			<br />
 
-			<h:dataTable id="tabelaAtividades"
+			<h:dataTable id="tabelaAtividadesSequencia"
 				styleClass="table table-hover table-bordered tabela"
-				value="#{atividadeBean.atividadesBase}" var="at">
+				value="#{produtoBean.newProduto.sequenciaDeProducao}" var="at">
 				<f:facet name="header">
-					<h4 align="center">Atividades Base</h4>
+					<h4 align="center">Sequencia de Produção</h4>
 				</f:facet>
 				<h:column>
 					<f:facet name="header">Identificador</f:facet> 
@@ -90,9 +164,8 @@
 
 				<h:column>
 					<f:facet name="header">Possiveis Maquinas</f:facet>
-					<h:dataTable id="tabelaPossiveisMaquinas"
-						
-						value="#{at.maquinas}" var="maq">
+					<h:dataTable id="tabelaPossiveisMaquinas" value="#{at.maquinas}"
+						var="maq">
 						<h:column>
 							<f:facet name="header">Id.</f:facet>
 							#{maq.id}
@@ -103,11 +176,10 @@
 						</h:column>
 					</h:dataTable>
 				</h:column>
-				
+
 				<h:column>
 					<f:facet name="header">Atividades Predecessoras</f:facet>
 					<h:dataTable id="tabelaAtividadesPredecessoras"
-						
 						value="#{at.atividadesPrecessoras}" var="ats">
 						<h:column>
 							<f:facet name="header">Id.</f:facet>

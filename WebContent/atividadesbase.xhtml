@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<title>Task</title>
+	<link href="dist/css/bootstrap.min.css" rel="stylesheet" media="screen" />
+	<link href="dist/css/signin.css" rel="stylesheet" />
+
+</h:head>
+<h:body>
+	<div class="container">
+		<h:form class="form-signin">
+			<h:messages id="mensage" infoClass="alert alert-success"
+				errorClass="alert alert-danger" fatalClass="alert alert-danger"
+				warnClass="alert alert-warning" />
+
+			<h2 class="form-signin-heading">Cadastro de Atividades Base</h2>
+
+			<h:inputText id="descricaoText" type="text" class="form-control"
+				required="true" maxlength="500"
+				value="#{atividadeBean.newAtividade.descricao}"
+				requiredMessage="Deve ser digitado a descricao da atividade" />
+			<p:watermark value="Descricao" for="descricaoText" />
+
+
+			<h:inputText id="tempoText" type="text" class="form-control"
+				required="true" maxlength="500"
+				value="#{atividadeBean.newAtividade.tempo}"
+				requiredMessage="Deve ser digitado o tempo desta atividade" />
+			<p:watermark value="Tempo" for="tempoText" />
+
+
+			<h:inputText id="quantidadeText" type="text" class="form-control"
+				required="true" maxlength="500"
+				value="#{atividadeBean.newAtividade.quantidadeDeProducao}"
+				requiredMessage="Deve ser digitado a quantidade de produto que esta atividade produzira" />
+			<p:watermark value="Quantidade Produção" for="quantidadeText" />
+
+			<h:selectManyListbox id="maquinaSelect" class="form-control"
+				required="true" value="#{atividadeBean.listaMaquinasEscolhidas}"
+				requiredMessage="Deve ser escolhido pelo menos uma maquina">
+
+				<f:selectItems value="#{atividadeBean.maquinas}" var="maq"
+					itemValue="#{maq.descricao}" itemLabel="#{maq.descricao}" />
+
+			</h:selectManyListbox>
+
+			<br />
+			
+			<h:outputLabel value="Atividades Predecessoras"/>
+			<h:selectManyListbox id="atividasSelect" class="form-control"
+				value="#{atividadeBean.atividadesEscolhidas}" >
+
+				<f:selectItems value="#{atividadeBean.atividadesBase}" var="at"
+					itemValue="#{at.id}" itemLabel="#{at.descricao}" />
+
+			</h:selectManyListbox>
+			
+			<br/>
+			<h:commandButton actionListener="#{atividadeBean.cadastrarAtividade}"
+				value="Cadastrar Atividade" class="btn btn-lg btn-primary btn-block" />
+
+			<br />
+
+			<h:dataTable id="tabelaAtividades"
+				styleClass="table table-hover table-bordered tabela"
+				value="#{atividadeBean.atividadesBase}" var="at">
+				<f:facet name="header">
+					<h4 align="center">Atividades Base</h4>
+				</f:facet>
+				<h:column>
+					<f:facet name="header">Identificador</f:facet> 
+					#{at.id}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Descrição</f:facet>
+					#{at.descricao}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Tempo</f:facet>
+					#{at.tempo}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Quantidade Produzida</f:facet>
+					#{at.quantidadeDeProducao}
+				</h:column>
+
+				<h:column>
+					<f:facet name="header">Possiveis Maquinas</f:facet>
+					<h:dataTable id="tabelaPossiveisMaquinas"
+						
+						value="#{at.maquinas}" var="maq">
+						<h:column>
+							<f:facet name="header">Id.</f:facet>
+							#{maq.id}
+						</h:column>
+						<h:column>
+							<f:facet name="header">Descrição</f:facet>
+							#{maq.descricao}
+						</h:column>
+					</h:dataTable>
+				</h:column>
+				
+				<h:column>
+					<f:facet name="header">Atividades Predecessoras</f:facet>
+					<h:dataTable id="tabelaAtividadesPredecessoras"
+						
+						value="#{at.atividadesPrecessoras}" var="ats">
+						<h:column>
+							<f:facet name="header">Id.</f:facet>
+							#{ats.id}
+						</h:column>
+						<h:column>
+							<f:facet name="header">Descrição</f:facet>
+							#{ats.descricao}
+						</h:column>
+					</h:dataTable>
+				</h:column>
+
+			</h:dataTable>
+
+		</h:form>
+	</div>
+
+</h:body>
+</html>
