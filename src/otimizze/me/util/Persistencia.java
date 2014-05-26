@@ -1,10 +1,14 @@
 package otimizze.me.util;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.Persistence;
 
 import otimizze.me.model.Atividade;
+import otimizze.me.model.Demanda;
 import otimizze.me.model.Finder;
 import otimizze.me.model.Maquina;
 import otimizze.me.model.Produto;
@@ -42,18 +46,31 @@ public class Persistencia {
 	
 	
 	public static void limparBancoDeDados(){
-		restartConnection();
-		for(Produto p : Finder.getProdutos()){
-			Produto.remover(p);
-		}
-		for(Atividade a : Finder.getAtividades()){
-			Atividade.remover(a);
-		}
-		for(Maquina m : Finder.getMaquinas()){
-			Maquina.remover(m);
-		}
+		List <Maquina> ma = Finder.getMaquinas();
+		List<Produto> pr = Finder.getProdutos();
+		List<Atividade> at = Finder.getAtividades();
+		List<Demanda> de = Finder.getDemandas();
+		iniciarTrascao();
 		
-		restartConnection();
+		for(Maquina m : ma){
+			em.remove(em.getReference(m.getClass(),
+					m.getId()));
+		}
+		for(Produto p : pr){
+			em.remove(em.getReference(p.getClass(),
+					p.getId()));
+		}
+		for(Demanda d : de){
+			em.remove(em.getReference(d.getClass(),
+					d.getId()));
+		}
+		for(Atividade a : at){
+			try{
+				em.remove(em.getReference(a.getClass(),
+					a.getId()));
+			}catch(EntityNotFoundException ne){}
+		}
+		finalizarTrascao();
 	}
 
 	private static void executeNativeQuery(String sql) {

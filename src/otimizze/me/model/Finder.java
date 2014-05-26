@@ -77,6 +77,15 @@ public final class Finder {
 		return produto;
 	}
 
+	public static List<Demanda> getDemandas() {
+		Persistencia.restartConnection();
+		Query q = Persistencia.em.createQuery(
+						"SELECT d FROM Demanda AS d",
+						Demanda.class);
+		List<Demanda> demandas = q.getResultList();
+		return demandas;
+	}
+
 	
 	
 	

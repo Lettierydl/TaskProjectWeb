@@ -2,12 +2,15 @@ package otimizze.me;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Calendar;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import otimizze.me.model.Atividade;
+import otimizze.me.model.Demanda;
 import otimizze.me.model.Maquina;
 import otimizze.me.model.Produto;
 import otimizze.me.util.Persistencia;
@@ -62,6 +65,11 @@ public class TestFacede {
 		return a;
 	}
 	
+	private Demanda criarDemanda() {
+		Demanda d = new Demanda();
+		d.setCriacao(Calendar.getInstance().getTime());
+		return d;
+	}
 	
 	@Test
 	public void testCadastrarMaquina() {
@@ -160,6 +168,34 @@ public class TestFacede {
 		f.cadastrarProduto(p);
 		assertEquals("Nao esta salvando o produto", p, f.getProdutos().get(0));
 		Assert.assertArrayEquals("Nao esta salvando o produto com as atividades", p.getSequenciaDeProducao().toArray(), f.getProdutos().get(0).getSequenciaDeProducao().toArray());
+	}
+	
+	
+	@Test
+	public void testCriarDemanda() {
+		Demanda d = criarDemanda();
+		f.cadastrarDemanda(d);
+		assertEquals("Nao esta salvando a demanda", d, f.getDemandas().get(0));
+	}
+	
+	@Test
+	public void testCriarDemandaComProduto() {
+		Produto p = criarProduto("Produto Demanda");
+		f.cadastrarProduto(p);
+		Demanda d = criarDemanda();
+		d.putProduto(p, 100);
+		f.cadastrarDemanda(d);
+		assertEquals("Nao esta salvando a demanda", d.getDemandaDeProdutos(), f.getDemandas().get(0).getDemandaDeProdutos());
+	}
+	
+	@Test
+	public void testCriarDemandaERemoverProdutoDaDemanda() {
+		testCriarDemandaComProduto();
+		Demanda d = f.getDemandas().get(0);
+		Produto p = f.getProdutos().get(0);
+		d.removeProdutoDaDemanda(p);
+		f.atualizarDemanda(d);
+		assertEquals("Nao esta salvando a alteracao na demanda", f.getDemandas().get(0).getDemandaDeProdutos().size(), 0 );
 	}
 
 	

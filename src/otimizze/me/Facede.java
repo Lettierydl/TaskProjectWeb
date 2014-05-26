@@ -3,6 +3,7 @@ package otimizze.me;
 import java.util.List;
 
 import otimizze.me.model.Atividade;
+import otimizze.me.model.Demanda;
 import otimizze.me.model.Finder;
 import otimizze.me.model.Maquina;
 import otimizze.me.model.Produto;
@@ -20,7 +21,11 @@ public class Facede {
 	public void cadastrarMaquina(Maquina newMaquina) {
 		Maquina.salvar(newMaquina);
 	}
-
+	
+	public void atualizarMaquina(Maquina m) {
+		Maquina.atualizar(m);
+	}
+	
 	public List<Atividade> getAtividades() {
 		return Finder.getAtividades();
 	}
@@ -46,6 +51,10 @@ public class Facede {
 	public void removerAtividade(Atividade atividae) {
 		Atividade.remover(atividae);
 	}
+	
+	public void atualizarAtividade(Atividade a) {
+		Atividade.atualizar(a);
+	}
 
 	public List<Produto> getProdutos() {
 		return Finder.getProdutos();
@@ -58,7 +67,22 @@ public class Facede {
 	public void cadastrarProduto(Produto newProduto) {
 		Produto.salvar(newProduto);
 	}
+	
+	public void atualizarProduto(Produto p) {
+		Produto.atualizar(p);
+	}
 
+	public void cadastrarDemanda(Demanda d) {
+		Demanda.salvar(d);
+	}
+	
+	public List<Demanda> getDemandas() {
+		return Finder.getDemandas();
+	}
+
+	public void atualizarDemanda(Demanda d) {
+		Demanda.atualizar(d);
+	}
 
 
 }

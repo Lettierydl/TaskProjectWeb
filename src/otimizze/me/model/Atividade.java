@@ -19,6 +19,9 @@ import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import otimizze.me.util.Persistencia;
 
 @Table(name = "atividade")
@@ -155,6 +158,7 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 	public int compareTo(Atividade o) {
 		return Integer.compare(sequencia, o.sequencia);
 	}
+
 
 	public static void salvar(Atividade a) {
 		persistirMaquinasNaoSalvas(a);
