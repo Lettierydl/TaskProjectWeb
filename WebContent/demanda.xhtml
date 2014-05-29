@@ -12,40 +12,68 @@
 </h:head>
 <h:body>
 	<div class="container">
-		<h:form class="form-signin">
-		<h:messages id="mensage" infoClass="alert alert-success" errorClass="alert alert-danger" fatalClass="alert alert-danger" warnClass="alert alert-warning"/>
-		
-			<h2 class="form-signin-heading">Demandas de Produtos</h2>
-			
-			<h:inputText id="descricaoText" type="text" class="form-control"
-				required="true" maxlength="500" value="#{maquinaBean.newMaquina.descricao}"
-				requiredMessage="Deve ser digitado a descricao da maquina"/>
-			<p:watermark value="Descricao" for="descricaoText"/>	
-			
-			<br/>
-			<h:commandButton actionListener="#{maquinaBean.cadastrarMaquina}" value="Cadastrar Maquina"
-				class="btn btn-lg btn-primary btn-block" />
-			
-			<br/>
-			
-			<h:dataTable id="tabelaMaquinas"
+	
+	<h:form>
+	
+		<h:dataTable id="tabelaProdutoDemanda"
 				styleClass="table table-hover table-bordered tabela"
-				value="#{maquinaBean.maquinas}" var="maq">
+				value="#{demandaBean.produtosNaoUtilizados}" var="pr">
 				<f:facet name="header">
-					<h4 align="center">Maquinas</h4>
+					<h4 align="center">Produtos</h4>
 				</f:facet>
 				<h:column>
 					<f:facet name="header">Identificador</f:facet> 
-					#{maq.id}
+					#{pr.id}
 				</h:column>
 				<h:column>
 					<f:facet name="header">Descrição</f:facet>
-					#{maq.descricao}
+					#{pr.descricao}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Quantidade</f:facet>
+					<p:inputText value="#{demandaBean.quantidade}"  >
+						<p:ajax  event="keyup" partialSubmit="true"/>
+					</p:inputText>
+				</h:column>
+				
+				<h:column>
+					<f:facet name="header">Operações</f:facet>
+					<p:commandButton value="Adicionar Produto">
+						<p:ajax  event="click" update="@form" listener="#{demandaBean.addProdutoNaDemanda(pr)}"/>
+					</p:commandButton>
 				</h:column>
 				
 			</h:dataTable>
 			
+			Demanda ja realizada
+			<h:dataTable id="tabelaProdutoNaDemanda"
+				styleClass="table table-hover table-bordered tabela"
+				value="#{demandaBean.newDemanda.produtoDaDemanda}" var="pr">
+				<f:facet name="header">
+					<h4 align="center">Produtos</h4>
+				</f:facet>
+				<h:column>
+					<f:facet name="header">Identificador</f:facet> 
+					#{pr.id}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Descrição</f:facet>
+					#{pr.descricao}
+				</h:column>
+				<h:column>
+					<f:facet name="header">Quantidade</f:facet>
+					<p:outputLabel value="#{demandaBean.newDemanda.getQuantidade(pr)}"/>
+				</h:column>
+				<h:column>
+					<f:facet name="header">Operações</f:facet>
+					<p:commandButton value="Remover Produto">
+						<p:ajax  event="click" update="@form" listener="#{demandaBean.removerProdutoDaDemanda(pr)}"/>
+					</p:commandButton>
+				</h:column>
+				
+			</h:dataTable>
 		</h:form>
+		
 	</div>
 
 </h:body>

@@ -67,7 +67,7 @@ public class TestFacede {
 	
 	private Demanda criarDemanda() {
 		Demanda d = new Demanda();
-		d.setCriacao(Calendar.getInstance().getTime());
+		d.setCriacao(Calendar.getInstance());
 		return d;
 	}
 	
@@ -75,7 +75,6 @@ public class TestFacede {
 	public void testCadastrarMaquina() {
 		Maquina m = criarMaquina("Maquina X");
 		f.cadastrarMaquina(m);
-		
 		assertEquals("Nao salvou no banco", m, f.getMaquina("Maquina X"));
 	}
 	

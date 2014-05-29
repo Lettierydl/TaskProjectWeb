@@ -1,7 +1,9 @@
 package otimizze.me.model;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Basic;
@@ -15,6 +17,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -31,15 +35,18 @@ public class Demanda {
 	@Column(name="id_demanda")
 	private int id;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	private Calendar criacao;
+	
 	@Column
-	private Date criacao;
+	private boolean isCalculada;
 	
 	@Column
 	private String observacao;
 	
 	@ElementCollection
 	@Fetch(FetchMode.JOIN)
-	@CollectionTable(name = "demanda_de_produtos", joinColumns =@JoinColumn(name="id_demanda",updatable = true))
+	@CollectionTable(name = "demanda_de_produtos", joinColumns = @JoinColumn(name="id_demanda",updatable = true))
 	@MapKeyJoinColumn(name="id_produto")
 	@Column(name="quantidade")
 	private Map<Produto, Integer> demandaDeProdutos = new HashMap<Produto, Integer>();
@@ -52,11 +59,11 @@ public class Demanda {
 		this.id = id;
 	}
 
-	public Date getCriacao() {
+	public Calendar getCriacao() {
 		return criacao;
 	}
 
-	public void setCriacao(Date criacao) {
+	public void setCriacao(Calendar criacao) {
 		this.criacao = criacao;
 	}
 	
@@ -68,8 +75,20 @@ public class Demanda {
 		this.observacao = observacao;
 	}
 
+	public boolean isCalculada() {
+		return isCalculada;
+	}
+
+	public void setCalculada(boolean isCalculada) {
+		this.isCalculada = isCalculada;
+	}
+
 	public Map<Produto, Integer> getDemandaDeProdutos() {
 		return demandaDeProdutos;
+	}
+	
+	public List<Produto> getProdutoDaDemanda(){
+		return new ArrayList<Produto>(this.getDemandaDeProdutos().keySet());
 	}
 	
 	public void putProduto(Produto p, int quantidade){
@@ -81,7 +100,7 @@ public class Demanda {
 		return this.demandaDeProdutos.remove(p);
 	}
 	
-	public int getProduto(Produto p){
+	public int getQuantidade(Produto p){
 		return getDemandaDeProdutos().get(p);
 	}
 	
