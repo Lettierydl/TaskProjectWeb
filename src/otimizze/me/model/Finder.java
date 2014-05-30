@@ -86,6 +86,35 @@ public final class Finder {
 		return demandas;
 	}
 
+	public static List<Demanda> getDemandasNaoCalculadas() {
+		Persistencia.restartConnection();
+		Query q = Persistencia.em.createQuery(
+						"SELECT d FROM Demanda AS d WHERE d.isCalculada = false",
+						Demanda.class);
+		List<Demanda> demandas = q.getResultList();
+		return demandas;
+	}
+
+	public static Demanda getDemanda(int id) {
+		Persistencia.restartConnection();
+		Query q = Persistencia.em.createQuery(
+						"SELECT d FROM Demanda AS d WHERE d.id = :idD",
+						Demanda.class);
+		q.setParameter("idD", id);
+		Demanda demanda = (Demanda) q.getSingleResult();
+		return demanda;
+	}
+
+	public static List<Maquina> getPossiveisMaquinasDaDemanda(Demanda n) {
+		Persistencia.restartConnection();
+		Query q = Persistencia.em.createNativeQuery("select maquina.id, maquina.descricao from maquina , atividade , atividades_maquinas, demanda_de_produtos "
+				+ "where maquina.id = atividades_maquinas.maquina_id and atividades_maquinas.atividade_id = atividade.id and atividade.produtoDaAtividade_id_produto = demanda_de_produtos.id_produto and "
+				+ "demanda_de_produtos.id_demanda = :idDemanda", Maquina.class);
+		q.setParameter("idDemanda", n.getId());
+		List<Maquina> maquinas = q.getResultList();
+		return maquinas;
+	}
+
 	
 	
 	

@@ -1,5 +1,6 @@
 package otimizze.me.model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.MapKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -41,7 +43,8 @@ public class Demanda {
 	@Column
 	private boolean isCalculada;
 	
-	@Column
+	@Lob
+	@Column(length=100000)
 	private String observacao;
 	
 	@ElementCollection
@@ -144,6 +147,24 @@ public class Demanda {
 		Persistencia.finalizarTrascao();
 	}
 
+	//Cuidado, esse metodo vai remover as demandas passadas na lista e nao salva a nova demanda
+	public static Demanda unirDemandas(List<Demanda> demandas){
+		Demanda d = new Demanda();
+		d.setObservacao("Demanda Criada Apartir de outras demandas:\n");
+		for (Demanda ds : demandas){
+			for(Produto p : ds.getProdutoDaDemanda()){
+				if(d.getDemandaDeProdutos().containsKey(p)){
+					d.putProduto(p, ds.getQuantidade(p) + d.getQuantidade(p));
+				}else{
+					d.putProduto(p, ds.getQuantidade(p));
+				}
+			}
+			d.setObservacao(d.getObservacao()+ds+"\n");
+			Demanda.remover(ds);
+		}
+		return d;
+	}
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -173,6 +194,11 @@ public class Demanda {
 		if (id != other.id)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Demanda criada em " + new SimpleDateFormat("dd/MM/yyyy HH:mm").format(criacao.getTime())  + ", observacao:" + observacao;
 	}
 
 	

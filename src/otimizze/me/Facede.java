@@ -76,13 +76,33 @@ public class Facede {
 		Demanda.salvar(d);
 	}
 	
+	public Demanda getDemanda(int id) {
+		return Finder.getDemanda(id);
+	}
+	
 	public List<Demanda> getDemandas() {
 		return Finder.getDemandas();
 	}
 
+	public List<Demanda> getDemandasNaoCalculadas() {
+		return Finder.getDemandasNaoCalculadas();
+	}
+	
 	public void atualizarDemanda(Demanda d) {
 		Demanda.atualizar(d);
 	}
+
+	public List<Maquina> getPossiveisMaquinasDaDemanda(Demanda n) {
+		return Finder.getPossiveisMaquinasDaDemanda(n);
+	}
+
+	public void removerDemanda(Demanda ds) {
+		Demanda.remover(ds);
+	}
+
+	
+
+	
 
 
 }

@@ -3,6 +3,7 @@ package otimizze.me;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -179,12 +180,12 @@ public class TestFacede {
 	
 	@Test
 	public void testCriarDemandaComProduto() {
-		Produto p = criarProduto("Produto Demanda");
+		Produto p = criarProduto("Produto Demanda"+Math.random());
 		f.cadastrarProduto(p);
 		Demanda d = criarDemanda();
 		d.putProduto(p, 100);
 		f.cadastrarDemanda(d);
-		assertEquals("Nao esta salvando a demanda", d.getDemandaDeProdutos(), f.getDemandas().get(0).getDemandaDeProdutos());
+		assertEquals("Nao esta salvando a demanda", d.getDemandaDeProdutos(), f.getDemanda(d.getId()).getDemandaDeProdutos());
 	}
 	
 	@Test
@@ -196,7 +197,49 @@ public class TestFacede {
 		f.atualizarDemanda(d);
 		assertEquals("Nao esta salvando a alteracao na demanda", f.getDemandas().get(0).getDemandaDeProdutos().size(), 0 );
 	}
-
+	
+	@Test
+	public void testPossiveisMaquinasDaDemanda(){
+		Atividade a = criarAtividade();
+		a.addMaquinas(criarMaquina("Maquina x "+Math.random()));
+		f.cadastrarAtividade(a, criarProduto("Produto zz"+Math.random()));
+		Produto p = a.getProdutoDaAtividade();
+		
+		Demanda d = criarDemanda();
+		d.putProduto(p, 90);
+		f.cadastrarDemanda(d);
+		
+		Assert.assertArrayEquals("Nao esta recuperando as maquinas da demanda",a.getMaquinas().toArray(), f.getPossiveisMaquinasDaDemanda(d).toArray());
+	}
+	
+	@Test
+	public void testUnirDemandas(){
+		testPossiveisMaquinasDaDemanda();testPossiveisMaquinasDaDemanda();
+		testPossiveisMaquinasDaDemanda();
+		Demanda d2 = f.getDemandas().get(1);
+		Demanda d3 = f.getDemandas().get(0);
+		d3.putProduto(d2.getProdutoDaDemanda().get(0), 121);
+		f.atualizarDemanda(d3);
+		
+		Demanda d = Demanda.unirDemandas(f.getDemandasNaoCalculadas());
+		f.cadastrarDemanda(d);
+		assertEquals("Nao esta unindo as demandas", d ,f.getDemandas().get(0) );
+	}
+	
+	@Test
+	public void testConstruirMatrizDeDemanda(){
+		testUnirDemandas();
+		Demanda d = f.getDemandas().get(0);
+		//unir atividades semelhantes multiplicando a quantidade produzida pela necessidade do produto
+		//desenha um exemplo que se torma mais facil
+		
+		//saida de 10 atividades e 10 maquinas
+		//uma matriz onde cada dinha da matriz diz o par (numero da maquinaX, e quanta aquela atividade gasta na maquinaX)
+		//ex: primeira linha da matriz 10X10
+		// (4 88) (8 68) 6 94 5 99 1 67 2 89 9 77 7 99 0 86 3 92
+		// essa linha diz que a primeira atividade na maquina 4 gasta 88 periodos (4 88)
+		// e na maquina 8 gasta 68 periodos (8 68) ...
+	}
 	
 
 }
