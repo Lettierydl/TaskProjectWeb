@@ -20,6 +20,11 @@ import otimizze.me.util.Persistencia;
 @Entity
 public class Produto implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Basic(optional = false)
@@ -64,6 +69,16 @@ public class Produto implements Serializable {
 	
 	public void removerAtividadeASequenciaDeProducao(Atividade atividade) {
 		this.sequenciaDeProducao.remove(atividade);
+	}
+	
+	public Atividade getAtividadeFinal() {
+		Atividade u = getSequenciaDeProducao().get(0);
+		for(Atividade a : getSequenciaDeProducao()){
+			if(a.isAtividadePrecessora(u)){
+				u = a;
+			}
+		}
+		return u;
 	}
 	
 	public static void salvar(Produto p)  {

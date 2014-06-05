@@ -2,6 +2,7 @@ package otimizze.me;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -13,6 +14,7 @@ import org.junit.Test;
 import otimizze.me.model.Atividade;
 import otimizze.me.model.Demanda;
 import otimizze.me.model.Maquina;
+import otimizze.me.model.MetaAtividade;
 import otimizze.me.model.Produto;
 import otimizze.me.util.Persistencia;
 
@@ -46,10 +48,9 @@ public class TestFacede {
 	
 	private Atividade criarAtividadeBase() {
 		Atividade a = new Atividade();
-		a.setDescricao("Polir a materia prima");
-		a.addMaquinas(criarMaquina("Maquina x"));
+		a.setDescricao("Polir a materia prima "+Math.random());
+		a.addMaquinas(criarMaquina("Maquina x"+Math.random()));
 		a.setTempo(3);
-		a.setSequencia(1);
 		a.setQuantidadeDeProducao(300);
 		a.setAtividadeBase(true);
 		return a;
@@ -59,9 +60,8 @@ public class TestFacede {
 		Atividade a = new Atividade();
 		a.setDescricao("Embalar Produto "+Math.random());
 		a.addMaquinas(criarMaquina("Maquina x "+Math.random()));
-		a.setTempo(3);
-		a.setSequencia(2);
-		a.setQuantidadeDeProducao(300);
+		a.setTempo(1);
+		a.setQuantidadeDeProducao(250);
 		a.setAtividadeBase(false);
 		return a;
 	}
@@ -69,6 +69,33 @@ public class TestFacede {
 	private Demanda criarDemanda() {
 		Demanda d = new Demanda();
 		d.setCriacao(Calendar.getInstance());
+		return d;
+	}
+	
+	private Demanda criarDemandaParaTeste(int quantidadeDeProduto) {
+		Demanda d = criarDemanda();
+		for(int i = 1;i <= quantidadeDeProduto;i++ ){
+			Produto p = criarProduto("Produto "+i+Math.random());
+			Atividade b1 = criarAtividadeBase();Atividade b2 = criarAtividadeBase();
+			Atividade b3 = criarAtividadeBase();
+			b3.setMaquinas(new ArrayList<Maquina>());
+			b3.addMaquinas(b1.getMaquinas().get(0));
+			Atividade a = criarAtividade();
+			a.addMaquinas(b1.getMaquinas().get(0));
+			a.addAtividadePrecessora(b1);a.addAtividadePrecessora(b2);
+			f.cadastrarAtividadeBase(b3);
+			b1.addAtividadePrecessora(b3);b2.addAtividadePrecessora(b3);
+			f.cadastrarAtividadeBase(b1);
+			f.cadastrarAtividadeBase(b2);
+			
+			
+			//f.cadastrarProduto(p);
+			f.cadastrarAtividade(a, p);
+			p.addAtividadeASequenciaDeProducao(a);
+			f.atualizarProduto(p);
+			d.putProduto(p, 2*300);
+		}
+		f.cadastrarDemanda(d);
 		return d;
 	}
 	
@@ -117,12 +144,12 @@ public class TestFacede {
 	}
 	
 	@Test
-	public void testCadastrarAtividadePrecessora() throws Exception {
+	public void testCadastrarAtividadePrecessora() {
 		Atividade a = criarAtividade();
 		Atividade a2 = criarAtividade();
 		f.cadastrarAtividadeBase(a2);
 		a.addAtividadePrecessora(a2);
-		f.cadastrarAtividade(a, criarProduto("Produto zz"));
+		f.cadastrarAtividade(a, criarProduto("Produto zz"+Math.random()));
 		assertEquals("Nao esta salvando a atividade precessora", a.getAtividadesPrecessoras().get(0), a2);
 	}
 	
@@ -227,19 +254,40 @@ public class TestFacede {
 	}
 	
 	@Test
+	public void testCriarFluxoDeAtividade(){
+		Demanda d = criarDemandaParaTeste(1);
+		Produto p = d.getProdutoDaDemanda().get(0);
+		List<MetaAtividade> met = d.calcularDemandaDeAtividadesDoProduto(p);
+		Assert.assertEquals(met.size(), 4);
+	}
+	
+	@Test
 	public void testConstruirMatrizDeDemanda(){
-		testUnirDemandas();
-		Demanda d = f.getDemandas().get(0);
-		//unir atividades semelhantes multiplicando a quantidade produzida pela necessidade do produto
+		Demanda d = criarDemandaParaTeste(5);
+		
+		for(Produto p : d.getProdutoDaDemanda()){
+			
+			printarArvoreDeAtividade( p.getAtividadeFinal());
+			
+			System.out.println("___");
+		}
+		
+		//mao unir atividades semelhantes, separar por demanda de produto// implementar uniao dessas atividades depois e deixar o usuario escolher
 		//desenha um exemplo que se torma mais facil
 		
 		//saida de 10 atividades e 10 maquinas
-		//uma matriz onde cada dinha da matriz diz o par (numero da maquinaX, e quanta aquela atividade gasta na maquinaX)
+		//uma matriz onde cada linha da matriz diz o par (numero da maquinaX, e quanta aquela atividade gasta na maquinaX)
 		//ex: primeira linha da matriz 10X10
 		// (4 88) (8 68) 6 94 5 99 1 67 2 89 9 77 7 99 0 86 3 92
 		// essa linha diz que a primeira atividade na maquina 4 gasta 88 periodos (4 88)
 		// e na maquina 8 gasta 68 periodos (8 68) ...
 	}
 	
+	public void printarArvoreDeAtividade(Atividade at){
+		System.out.print(at.getId()+" <- ");
+		for(Atividade a : at.getAtividadesPrecessoras()){
+			printarArvoreDeAtividade(a);
+		}
+	}
 
 }

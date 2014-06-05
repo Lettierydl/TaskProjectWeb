@@ -43,6 +43,11 @@ public class Facede {
 		Atividade.salvar(newAtividade);
 	}
 	
+	public void atribuirAtividadeAoProduto(Atividade newAtividade, Produto newProduto) {
+		newAtividade.setProdutoDaAtividade(newProduto);
+		Atividade.atualizar(newAtividade);
+	}
+	
 	public void cadastrarAtividadeBase(Atividade newAtividade) {
 		newAtividade.setAtividadeBase(true);
 		Atividade.salvar(newAtividade);

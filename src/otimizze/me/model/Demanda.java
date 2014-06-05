@@ -3,6 +3,7 @@ package otimizze.me.model;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +110,30 @@ public class Demanda {
 	
 	public void setDemandaDeProdutos(Map<Produto, Integer> demandaDeProdutos) {
 		this.demandaDeProdutos = demandaDeProdutos;
+	}
+	
+	public List<MetaAtividade> calcularDemandaDeAtividadesDoProduto(Produto p){
+		Atividade f = p.getAtividadeFinal();
+		List<MetaAtividade> sequencia = criarFluxoDeAtividade(f,0, new ArrayList<MetaAtividade>(), this.demandaDeProdutos.get(p));
+		Collections.sort(sequencia);
+		return sequencia;
+	}
+
+	private List<MetaAtividade> criarFluxoDeAtividade(Atividade ultima,int sequencia, List<MetaAtividade> l, int necessidadeDeProducao) {
+		MetaAtividade m = new MetaAtividade();
+		m.setAtividade(ultima);
+		m.setSequencia(sequencia++);m.setNecessidadeDeProducao(necessidadeDeProducao);
+		m.calculargNecessidadeDeTempo();
+		m.setIdPredecessoras(new ArrayList<Integer>());
+		if(l.contains(m)){
+			return l;
+		}
+		l.add(m);
+		for(Atividade pre: ultima.getAtividadesPrecessoras()){
+			m.getIdPredecessoras().add(pre.getId());
+			criarFluxoDeAtividade(pre, sequencia, l, necessidadeDeProducao);
+		}
+		return l;
 	}
 
 	public static void salvar(Demanda d)  {

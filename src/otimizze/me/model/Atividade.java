@@ -18,6 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NoResultException;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -58,13 +59,13 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 	@Column(nullable = false)
 	private boolean atividadeBase;// atividade sem produto
 
-	@ManyToOne(cascade = CascadeType.PERSIST)
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH})
 	private Produto produtoDaAtividade;
 
-	@OneToMany(cascade = CascadeType.DETACH)
-	@JoinTable(name="atividades_precessoras",
-	joinColumns = @JoinColumn(name = "atividade_id") ,
-	inverseJoinColumns = @JoinColumn(name = "atividade_precessora_id"))
+	@ManyToMany(cascade = CascadeType.DETACH)
+	@JoinTable(name="atividades_precessoras",uniqueConstraints={},
+	joinColumns = @JoinColumn(name = "atividade_id", unique=false) ,
+	inverseJoinColumns = @JoinColumn(name = "atividade_precessora_id", unique= false))
 	private List<Atividade> atividadesPrecessoras;// atividades que precedem
 													// esta atividade
 
@@ -119,31 +120,32 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 	public boolean isAtividadeBase() {
 		return atividadeBase;
 	}
+	
+	public boolean isAtividadePrecessora(Atividade a) {
+		return getAtividadesPrecessoras().contains(a);
+	}
 
 	public void setAtividadeBase(boolean atividadeDeProduto) {
 		this.atividadeBase = atividadeDeProduto;
 	}
 
 	public List<Atividade> getAtividadesPrecessoras() {
-		return atividadesPrecessoras;
+		if (this.atividadesPrecessoras == null) {
+			this.atividadesPrecessoras = new LinkedList<Atividade>();
+		}
+		return this.atividadesPrecessoras;
 	}
 
 	public void addMaquinas(Maquina maquina) {
 		if (this.maquinas == null) {
 			this.maquinas = new LinkedList<Maquina>();
 		}
-		this.maquinas.add(maquina);
+		getMaquinas().add(maquina);
 		maquina.addPossivelAtividade(this);
 	}
 
-	public void addAtividadePrecessora(Atividade precessora) throws Exception {
-		if (this.atividadesPrecessoras == null) {
-			this.atividadesPrecessoras = new LinkedList<Atividade>();
-		}
-		if (precessora.equals(this)) {//verificar tambem de não existe tipo um deadlock de atividades
-			throw new Exception("Loop de atividade");
-		}
-		this.atividadesPrecessoras.add(atividadesPrecessoras.size(), precessora);
+	public void addAtividadePrecessora(Atividade precessora) {
+		getAtividadesPrecessoras().add(atividadesPrecessoras.size(), precessora);
 	}
 
 	public Produto getProdutoDaAtividade() {
@@ -152,6 +154,7 @@ public class Atividade implements Serializable, Comparable<Atividade> {
 
 	public void setProdutoDaAtividade(Produto produtoDaAtividade) {
 		this.produtoDaAtividade = produtoDaAtividade;
+		this.setAtividadeBase(false);
 	}
 
 	@Override
